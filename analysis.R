@@ -4,6 +4,7 @@
 library(openair)
 library(ggplot2)
 library(reshape2)
+library(readr)
 # Load the data -------------
 filepath <- '~/data/ODIN_SD/2017-traffic-AK'
 load(paste0(filepath,'/odin_traffic_data.RData'))
@@ -35,11 +36,13 @@ long.pm10 <- long.odin.data[startsWith(as.character(long.odin.data$variable),"PM
 long.pm1$log_value <- log(long.pm1$value)
 long.pm2.5$log_value <- log(long.pm2.5$value)
 long.pm10$log_value <- log(long.pm10$value)
-ggplot(long.pm1, aes(x=variable, value)) + 
-  geom_boxplot(position=position_dodge(1)) + 
-  ylim(c(0,25))
+ggplot(long.pm10.1hr, aes(x=variable, value)) + 
+  geom_boxplot(position=position_dodge(1)) +
+  ylab("Daily PM10") +
+  xlab("")
 
-ggplot(long.pm1, aes(x=date,y=value,colour=variable)) +
+
+ggplot(long.pm10.1hr, aes(x=date,y=value,colour=variable)) +
   geom_line()
 
 # 1 hour data ----
