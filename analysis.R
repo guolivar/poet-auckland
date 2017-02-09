@@ -19,9 +19,21 @@ raw.odin.data <- merge(raw.odin.data,ODIN.109,by='date',all=TRUE)
 raw.odin.data <- merge(raw.odin.data,ODIN.110,by='date',all=TRUE)
 raw.odin.data <- merge(raw.odin.data,ODIN.114,by='date',all=TRUE)
 raw.odin.data <- merge(raw.odin.data,ODIN.115,by='date',all=TRUE)
-# Homogenise the time bases (on the minute)
-odin.data <- timeAverage(raw.odin.data,avg.time = '1 min')
-odin.data.1hr <- timeAverage(raw.odin.data,avg.time = '1 week')
+# Homogenise a time bases
+all.odin.data <- timeAverage(raw.odin.data,avg.time = '1 min')
+
+# Separate the data into chunks per metric
+pm10.odin <- all.odin.data[,c('date',names(all.odin.data)[startsWith(names(all.odin.data),"PM10.")])]
+write_csv(pm10.odin,paste0(filepath,'/pm10.csv'))
+pm2.5.odin <- all.odin.data[,c('date',names(all.odin.data)[startsWith(names(all.odin.data),"PM2.5")])]
+write_csv(pm2.5.odin,paste0(filepath,'/pm2.5.csv'))
+Temperature.odin <- all.odin.data[,c('date',names(all.odin.data)[startsWith(names(all.odin.data),"Tempera")])]
+write_csv(Temperature.odin,paste0(filepath,'/Temperature.csv'))
+RH.odin <- all.odin.data[,c('date',names(all.odin.data)[startsWith(names(all.odin.data),"RH")])]
+write_csv(RH.odin,paste0(filepath,'/RH.csv'))
+
+odin.data.1hr <- timeAverage(all.odin.data,avg.time = '1 hour')
+
 long.odin.data <- melt(odin.data,id.vars = 'date')
 long.odin.data.1hr <- melt(odin.data.1hr,id.vars = 'date')
 
@@ -36,13 +48,13 @@ long.pm10 <- long.odin.data[startsWith(as.character(long.odin.data$variable),"PM
 long.pm1$log_value <- log(long.pm1$value)
 long.pm2.5$log_value <- log(long.pm2.5$value)
 long.pm10$log_value <- log(long.pm10$value)
-ggplot(long.pm10.1hr, aes(x=variable, value)) + 
+ggplot(long.pm10, aes(x=variable, value)) + 
   geom_boxplot(position=position_dodge(1)) +
   ylab("Daily PM10") +
   xlab("")
 
 
-ggplot(long.pm10.1hr, aes(x=date,y=value,colour=variable)) +
+ggplot(long.pm10, aes(x=date,y=value,colour=variable)) +
   geom_line()
 
 # 1 hour data ----
@@ -62,4 +74,8 @@ ggplot(long.pm2.5.1hr, aes(x=variable, value)) +
 
 ggplot(long.pm10.1hr, aes(x=date,y=value,colour=variable)) +
   geom_line()
+
+# Time Variation plots ----------------
+timeVariation(all.odin.data,pollutant = c('PM2.5.101','PM2.5.100','PM2.5.110','PM2.5.103','PM2.5.108'))
+timeVariation(all.odin.data,pollutant = c('PM2.5.101','PM2.5.110','PM2.5.114'))
 
