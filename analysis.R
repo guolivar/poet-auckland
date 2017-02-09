@@ -4,6 +4,7 @@
 library(openair)
 library(ggplot2)
 library(reshape2)
+library(readr)
 # Load the data -------------
 filepath <- '~/data/ODIN_SD/2017-traffic-AK'
 load(paste0(filepath,'/odin_traffic_data.RData'))
